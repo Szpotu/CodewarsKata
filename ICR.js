@@ -34,7 +34,7 @@ const insertSpaces = (text, spaces) => {
     myText = myText.split('');
     for (let i = 0; i < spaces.length; i++) {
         addIndex(myText, spaces[i] - 1, ' ');
-        console.log(spaces[i]);
+
     }
 
     return myText
@@ -48,45 +48,89 @@ const rotateToRight = (word, repeat) => {
 
     return word.join('');
 };
+const rotateToLeft = (word, repeat) => {
+    word = word.split('');
+    for (let i = 0; i < repeat; i++) {
+        word.push(word[0]);
+        word.shift();
+    }
+    return word.join('');
+}
+
 
 const encode = (n, someString) => {
-        //Step 1 
-        let splitedString = someString.split(''),
-            nowhiteText = someString.split(/\s/).join(''),
-            newWord = [],
-            index = [],
-            newString = [],
-            counter = 0;
-        
-        for (iterate of splitedString) {
-            counter++;
-            if (iterate == ' ') {
-                console.log(counter);
-                index.push(counter)
-            }
-        };
-        //Step 2 
-        nowhiteText = nowhiteText.split('');
-        for (let i = nowhiteText.length - 1; i >= nowhiteText.length - n; i--) {
-            newWord.push(nowhiteText[i]);
-        }
+    //Step 1 
+    let splitedString = someString.split(''),
+        nowhiteText = someString.split(/\s/).join(''),
+        newWord = [],
+        index = [],
+        encodedString = [],
+        counter = 0;
 
-        newWord = newWord.reverse();
-        splitedString.unshift(...newWord);
-        //Step 3 
-        splitedString = splitedString.join('').toString().split(/\s/).join('').toString();
-        splitedString = insertSpaces(splitedString, index);
-        for (let i = 0; i < n; i++) {
-            splitedString.pop();
+    for (iterate of splitedString) {
+        counter++;
+        if (iterate == ' ') {
+            index.push(counter)
         }
-        //Step 4
-        splitedString = splitedString.join('').split(/\s/);
-        for (value in splitedString) {
-            newString.push(rotateToRight(splitedString[value], 10));
-            newString.push(' ');
-        }
-        newString.pop();
-
-        return newString.join('');
+    };
+    //Step 2 
+    nowhiteText = nowhiteText.split('');
+    for (let i = nowhiteText.length - 1; i >= nowhiteText.length - n; i--) {
+        newWord.push(nowhiteText[i]);
     }
-    
+
+    newWord = newWord.reverse();
+    splitedString.unshift(...newWord);
+    //Step 3 
+    splitedString = splitedString.join('').split(/\s/).join('');
+    splitedString = insertSpaces(splitedString, index);
+    for (let i = 0; i < n; i++) {
+        splitedString.pop();
+    }
+    //Step 4
+    splitedString = splitedString.join('').split(/\s/);
+    splitedString.unshift(`${n}`);
+    for (value in splitedString) {
+        encodedString.push(rotateToRight(splitedString[value], parseInt(n)));
+        encodedString.push(' ');
+    }
+    encodedString.pop();
+
+
+    return encodedString.join('');
+};
+const decode = (someString) => {
+
+    let splitedToWords = someString.split(/\s/),
+        rotatedString = [],
+        spacePositions = [],
+        n = parseInt(splitedToWords[0], 10),
+        regexForN = new RegExp(n.toString()),
+        word = '',
+        counter = 0,
+        decodedString = [],
+        splitedString = someString.split(regexForN);
+    splitedString.splice(0, 1);
+    splitedString = splitedString.join('').split('');
+    splitedString.splice(0, 1);
+    console.log(splitedString);
+    for (value in splitedString) {
+        counter++;
+        if (splitedString[value] == ' ') {
+
+            spacePositions.push(counter);
+        }
+    }
+    splitedString = splitedString.join('').split(/\s/);
+    for (value in splitedString) {
+        rotatedString.push(rotateToLeft(splitedString[value], n));
+    }
+    word = rotatedString.join('').slice(0, n);
+    console.log(word);
+    rotatedString.push(word);
+    decodedString = rotatedString.join('').split('');
+    decodedString.splice(0, n);
+    decodedString = insertSpaces(decodedString.join(''), spacePositions);
+    return decodedString.join('');
+}
+let test = encode(10, text);
